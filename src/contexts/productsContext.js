@@ -10,7 +10,11 @@ const INIT_STATE = {
 function reducer(state = INIT_STATE, action) {
   switch (action.type) {
     case "GET_PRODUCTS":
-      return { ...state, products: action.payload };
+      return {
+        ...state,
+        products: action.payload.data,
+        pages: Math.ceil(action.payload.headers["x-total-count"] / 2),
+      };
     case "GET_ONE":
       return { ...state, oneProduct: action.payload };
     default:
@@ -22,7 +26,7 @@ const PRODUCTS_API = "http://localhost:8000/products";
 
 const ProductsContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, INIT_STATE);
-
+  // console.log(state);
   //!Create
   async function createProduct(newProduct) {
     await axios.post(PRODUCTS_API, newProduct);
@@ -30,11 +34,11 @@ const ProductsContextProvider = ({ children }) => {
   }
   //!Read
   async function getProducts() {
-    const res = await axios(PRODUCTS_API);
-    // console.log(res);
+    const res = await axios(`${PRODUCTS_API}${window.location.search}`);
+
     dispatch({
       type: "GET_PRODUCTS",
-      payload: res.data,
+      payload: res,
     });
   }
 
@@ -47,10 +51,16 @@ const ProductsContextProvider = ({ children }) => {
   //! Detail
   async function getOneProduct(id) {
     const res = await axios(`${PRODUCTS_API}/${id}`);
+
     dispatch({
       type: "GET_ONE",
       payload: res.data,
     });
+  }
+
+  //! Update
+  async function updateProduct(id, editedProduct) {
+    await axios.patch(`${PRODUCTS_API}/${id}`, editedProduct);
   }
 
   return (
@@ -58,10 +68,12 @@ const ProductsContextProvider = ({ children }) => {
       value={{
         products: state.products,
         oneProduct: state.oneProduct,
+        pages: state.pages,
         deleteProduct,
         createProduct,
         getProducts,
         getOneProduct,
+        updateProduct,
       }}>
       {children}
     </productsContext.Provider>
