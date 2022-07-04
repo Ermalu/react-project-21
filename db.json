@@ -20,6 +20,13 @@
       "price": 1500,
       "image": "https://st.depositphotos.com/1006075/2120/i/600/depositphotos_21205573-stock-photo-lollipops.jpg",
       "id": 6
+    },
+    {
+      "title": "marshmellou",
+      "description": "sweet",
+      "price": 1000,
+      "image": "123",
+      "id": 7
     }
   ]
 }
